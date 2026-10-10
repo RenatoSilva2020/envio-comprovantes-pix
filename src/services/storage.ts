@@ -12,7 +12,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   sheetName: 'Comprovantes_Pix',
   driveFolderId: '',
   driveFolderName: 'Comprovantes_Pix_Uploads',
-  institutionName: 'Prefeitura Municipal / Secretaria de Finanças',
+  institutionName: 'Escola Estadual Mário Porto (EEMP)',
   autoSyncWithGas: true,
   adminPassword: 'eemp2026',
   pixQrCodeUrl: 'https://i.ibb.co/N6zcpGFL/pix-eemp.png',
@@ -20,12 +20,12 @@ export const DEFAULT_SETTINGS: AppSettings = {
   pixFavorecido: 'EUNICE ABADIA MARTINS',
   cartazInstrucoesUrl: 'https://i.ibb.co/4ZSbNDSz/Cartaz-Pagamento.png',
   referenciasPredefinidas: [
-    { id: 'ref-1', label: 'Mensalidade Outubro/2026', valor: 350.0 },
-    { id: 'ref-2', label: 'Matrícula 2026/2 - Taxa de Inscrição', valor: 120.0 },
-    { id: 'ref-3', label: 'Segunda Via de Documento / Certidão', valor: 45.0 },
-    { id: 'ref-4', label: 'Taxa de Expedição de Diploma', valor: 85.0 },
-    { id: 'ref-5', label: 'Inscrição em Concurso / Processo Seletivo', valor: 150.0 },
-    { id: 'ref-6', label: 'Taxa Administrativa Geral', valor: 60.0 },
+    { id: 'ref-1', label: 'À VISTA (OUTUBRO)', valor: 110.0 },
+    { id: 'ref-2', label: 'À VISTA (NOVEMBRO)', valor: 115.0 },
+    { id: 'ref-3', label: 'À VISTA (DEZEMBRO)', valor: 120.0 },
+    { id: 'ref-4', label: 'À VISTA (CRIANÇA)', valor: 70.0 },
+    { id: 'ref-5', label: 'PARCELA (ADULTO)', valor: 40.0 },
+    { id: 'ref-6', label: 'PARCELA (CRIANÇA)', valor: 25.0 },
   ],
 };
 
@@ -183,20 +183,7 @@ export function generateReceiptId(): string {
 }
 
 export function getEffectiveDefaultSettings(): AppSettings {
-  try {
-    const rawDefault = localStorage.getItem(DEFAULT_STATE_KEY);
-    if (rawDefault) {
-      const parsedDefault = JSON.parse(rawDefault);
-      const effective = { ...DEFAULT_SETTINGS, ...parsedDefault };
-      if (effective.spreadsheetId === '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms') {
-        effective.spreadsheetId = '';
-      }
-      return effective;
-    }
-  } catch {
-    // fallback
-  }
-  return DEFAULT_SETTINGS;
+  return { ...DEFAULT_SETTINGS };
 }
 
 export function getSettings(): AppSettings {
@@ -227,6 +214,24 @@ export function getSettings(): AppSettings {
     if (!merged.cartazInstrucoesUrl) {
       merged.cartazInstrucoesUrl = DEFAULT_SETTINGS.cartazInstrucoesUrl;
     }
+    // Garante que a lista de referências pré-definidas contenha exatamente as opções e valores oficiais solicitados
+    const currentRefs = merged.referenciasPredefinidas || [];
+    const hasOldRefs =
+      currentRefs.length === 0 ||
+      currentRefs.some(
+        (r: { label?: string; valor?: number }) =>
+          !r.label ||
+          r.valor === 0 ||
+          !r.valor ||
+          r.label.includes('Mensalidade') ||
+          r.label.includes('Matrícula') ||
+          r.label.includes('Diploma') ||
+          r.label === 'À VISTA' ||
+          r.label === 'PARCELA 1'
+      );
+    if (hasOldRefs) {
+      merged.referenciasPredefinidas = DEFAULT_SETTINGS.referenciasPredefinidas;
+    }
     return merged;
   } catch {
     return baseDefaults;
@@ -250,10 +255,20 @@ export function resetToDefaultSettings(): AppSettings {
   return target;
 }
 
+// Chave de versão para atualização imediata em clientes com cache
+const CONFIG_VERSION_KEY = 'pixsync_config_version_v7';
+
 // Inicializa e sincroniza o estado atual como padrão definitivo do sistema
 export function syncCurrentStateAsPermanentDefault(): void {
   try {
     if (typeof window !== 'undefined') {
+      const version = localStorage.getItem(CONFIG_VERSION_KEY);
+      if (version !== 'v7') {
+        localStorage.setItem(DEFAULT_STATE_KEY, JSON.stringify(DEFAULT_SETTINGS));
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(DEFAULT_SETTINGS));
+        localStorage.setItem(CONFIG_VERSION_KEY, 'v7');
+        return;
+      }
       const currentRaw = localStorage.getItem(SETTINGS_KEY);
       if (currentRaw) {
         const parsed = JSON.parse(currentRaw);

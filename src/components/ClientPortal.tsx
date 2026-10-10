@@ -227,6 +227,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
     setFormNomeServidor(activeClientName || '');
 
     // Inicializa a referência pré-definida com seu valor fixo
+    // Inicializa a primeira referência pré-definida com seu valor fixo travado
     const preRefs = settings.referenciasPredefinidas || [];
     if (preRefs.length > 0) {
       setSelectedRefId(preRefs[0].id);
@@ -754,34 +755,42 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
                     )}
                   </div>
 
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="text-xs font-bold text-slate-700 uppercase">
-                        Valor (R$) *
-                      </label>
-                      {selectedRefId !== 'custom' && (
-                        <span className="text-[10px] text-emerald-800 font-bold bg-emerald-100 px-1.5 py-0.5 rounded">
-                          Fixo
-                        </span>
-                      )}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-xs font-bold text-slate-700 uppercase">
+                          Valor (R$) *
+                        </label>
+                        {selectedRefId !== 'custom' ? (
+                          <span className="text-[10px] text-emerald-800 font-bold bg-emerald-100 px-1.5 py-0.5 rounded">
+                            Valor Fixo Travado
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-slate-500 font-medium">
+                            Valor Editável
+                          </span>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <span className="absolute left-3 top-2 text-sm font-bold text-slate-400">R$</span>
+                        <input
+                          type="text"
+                          value={formValor}
+                          onChange={(e) => {
+                            if (selectedRefId === 'custom') {
+                              setFormValor(e.target.value);
+                            }
+                          }}
+                          readOnly={selectedRefId !== 'custom'}
+                          placeholder="0,00"
+                          required
+                          className={`w-full pl-9 pr-3 py-2 text-sm sm:text-base font-bold border rounded-lg focus:outline-hidden ${
+                            selectedRefId !== 'custom'
+                              ? 'bg-slate-100 border-slate-300 text-slate-800 cursor-not-allowed select-none'
+                              : 'border-slate-300 focus:ring-2 focus:ring-emerald-500 bg-white'
+                          }`}
+                        />
+                      </div>
                     </div>
-                    <div className="relative">
-                      <span className="absolute left-3 top-2 text-sm font-bold text-slate-400">R$</span>
-                      <input
-                        type="text"
-                        value={formValor}
-                        onChange={(e) => setFormValor(e.target.value)}
-                        readOnly={selectedRefId !== 'custom'}
-                        placeholder="0,00"
-                        required
-                        className={`w-full pl-9 pr-3 py-2 text-sm sm:text-base font-bold border rounded-lg focus:outline-hidden ${
-                          selectedRefId !== 'custom'
-                            ? 'bg-emerald-50/70 border-emerald-300 text-emerald-900 cursor-not-allowed'
-                            : 'border-slate-300 focus:ring-2 focus:ring-emerald-500'
-                        }`}
-                      />
-                    </div>
-                  </div>
                 </div>
               </div>
 
