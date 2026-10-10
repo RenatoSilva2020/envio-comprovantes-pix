@@ -219,7 +219,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       {/* Top Header & Fast Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-xs">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs uppercase font-bold tracking-wider text-emerald-800">
               Painel de Controle
             </span>
@@ -227,6 +227,24 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <span className="text-xs text-slate-600 font-medium">
               Administração Geral
             </span>
+            <span className="text-[11px] text-slate-500">·</span>
+            {settings?.gasWebAppUrl ? (
+              <span
+                className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full"
+                title="Google Sheets integrado ao sistema"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span>Sheets Integrado</span>
+              </span>
+            ) : (
+              <span
+                className="inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full"
+                title="Aguardando inserção da URL no código pelo desenvolvedor"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                <span>Planilha Não Vinculada</span>
+              </span>
+            )}
           </div>
           <h2 className="text-lg sm:text-2xl font-bold text-slate-900 mt-1">
             Gestão e Conferência de Pagamentos Pix

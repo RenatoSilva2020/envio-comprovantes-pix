@@ -7,7 +7,7 @@ const CLIENTS_KEY = 'pixsync_clients_v1';
 
 export const DEFAULT_SETTINGS: AppSettings = {
   spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
-  gasWebAppUrl: '',
+  gasWebAppUrl: 'https://script.google.com/macros/s/AKfycbxdGaf01Bqah9zCI_TWnX88Q92mI8kqjIT55FbrcOLtmVUrEYaQsDkqPQN1MGkaBKCcww/exec',
   apiSecretToken: 'pix-sync-sec-2026',
   sheetName: 'Comprovantes_Pix',
   driveFolderId: '',
@@ -213,6 +213,9 @@ export function getSettings(): AppSettings {
     }
     if (!merged.pixFavorecido) {
       merged.pixFavorecido = DEFAULT_SETTINGS.pixFavorecido;
+    }
+    if (!merged.gasWebAppUrl) {
+      merged.gasWebAppUrl = DEFAULT_SETTINGS.gasWebAppUrl;
     }
     if (!merged.cartazInstrucoesUrl) {
       merged.cartazInstrucoesUrl = DEFAULT_SETTINGS.cartazInstrucoesUrl;
