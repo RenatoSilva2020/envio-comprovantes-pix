@@ -7,6 +7,7 @@ import {
   saveReceipt,
   updateReceipt,
   setAllReceipts,
+  isAiStudioEnvironment,
 } from './services/storage';
 import { submitReceiptToGas, updateStatusInGas, fetchReceiptsFromGas } from './services/gasService';
 import { Header } from './components/Header';
@@ -19,6 +20,7 @@ import { SyncSheetsModal } from './components/SyncSheetsModal';
 import { Shield, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 export default function App() {
+  const showSettingsTab = isAiStudioEnvironment();
   const [currentTab, setCurrentTab] = useState<'client' | 'admin' | 'settings'>('client');
   const [settings, setSettings] = useState<AppSettings>(getSettings());
   const [receipts, setReceipts] = useState<PixReceipt[]>([]);
@@ -181,6 +183,7 @@ export default function App() {
         onSelectTab={setCurrentTab}
         settings={settings}
         pendingCount={pendingCount}
+        showSettingsTab={showSettingsTab}
       />
 
       {/* Main Content Area */}
@@ -275,10 +278,19 @@ export default function App() {
         )}
 
         {currentTab === 'settings' && (
-          <SettingsPanel
-            settings={settings}
-            onSaveSettings={handleSaveSettings}
-          />
+          showSettingsTab ? (
+            <SettingsPanel
+              settings={settings}
+              onSaveSettings={handleSaveSettings}
+            />
+          ) : (
+            <ClientPortal
+              receipts={receipts}
+              onSubmitReceipt={handleSubmitReceipt}
+              onViewReceipt={(r) => handleOpenReceiptModal(r, false)}
+              settings={settings}
+            />
+          )
         )}
       </main>
 
@@ -317,8 +329,11 @@ export default function App() {
         onReceiptsUpdated={(updated) => setReceipts(updated)}
         onNavigateToSettings={() => {
           setIsSyncModalOpen(false);
-          setCurrentTab('settings');
+          if (showSettingsTab) {
+            setCurrentTab('settings');
+          }
         }}
+        showSettingsTab={showSettingsTab}
       />
     </div>
   );

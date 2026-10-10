@@ -393,3 +393,29 @@ export function getReceiptsByCPF(cpf: string): PixReceipt[] {
   return all.filter((r) => cleanCPF(r.cpf) === cleanTarget);
 }
 
+// Detecta se o sistema está rodando no ambiente do AI Studio
+// No sistema postado (GitHub Pages), o painel de configurações e GAS fica oculto
+export function isAiStudioEnvironment(): boolean {
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname;
+  const isDevHost =
+    host.includes('run.app') ||
+    host === 'localhost' ||
+    host === '127.0.0.1' ||
+    host.includes('webcontainer') ||
+    host.includes('codesandbox');
+
+  // Permite acesso de contingência caso o responsável adicione ?config=true na URL do GitHub Pages
+  try {
+    const search = window.location.search;
+    if (search && (search.includes('config=true') || search.includes('dev=true'))) {
+      return true;
+    }
+  } catch {
+    // ignore
+  }
+
+  return isDevHost;
+}
+
+

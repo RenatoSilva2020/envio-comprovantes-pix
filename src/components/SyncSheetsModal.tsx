@@ -23,6 +23,7 @@ interface SyncSheetsModalProps {
   settings: AppSettings;
   onReceiptsUpdated: (newReceipts: PixReceipt[]) => void;
   onNavigateToSettings: () => void;
+  showSettingsTab?: boolean;
 }
 
 export const SyncSheetsModal: React.FC<SyncSheetsModalProps> = ({
@@ -32,6 +33,7 @@ export const SyncSheetsModal: React.FC<SyncSheetsModalProps> = ({
   settings,
   onReceiptsUpdated,
   onNavigateToSettings,
+  showSettingsTab = false,
 }) => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
@@ -249,20 +251,22 @@ export const SyncSheetsModal: React.FC<SyncSheetsModalProps> = ({
                 </div>
               </div>
 
-              <div className="pt-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClose();
-                    onNavigateToSettings();
-                  }}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
-                >
-                  <Settings className="w-4 h-4" />
-                  <span>Ir para Configurações &amp; GAS</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
+              {showSettingsTab && (
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onNavigateToSettings();
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
+                  >
+                    <Settings className="w-4 h-4" />
+                    <span>Ir para Configurações &amp; GAS</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="space-y-4">
@@ -458,17 +462,21 @@ export const SyncSheetsModal: React.FC<SyncSheetsModalProps> = ({
 
         {/* Footer */}
         <div className="bg-slate-50 border-t border-slate-200 p-3 sm:p-4 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => {
-              onClose();
-              onNavigateToSettings();
-            }}
-            className="text-xs text-slate-600 hover:text-emerald-700 font-medium inline-flex items-center gap-1.5 cursor-pointer"
-          >
-            <Settings className="w-3.5 h-3.5" />
-            <span>Configurações &amp; Código GAS</span>
-          </button>
+          {showSettingsTab ? (
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onNavigateToSettings();
+              }}
+              className="text-xs text-slate-600 hover:text-emerald-700 font-medium inline-flex items-center gap-1.5 cursor-pointer"
+            >
+              <Settings className="w-3.5 h-3.5" />
+              <span>Configurações &amp; Código GAS</span>
+            </button>
+          ) : (
+            <span className="text-[11px] text-slate-400">Sincronização Google Sheets</span>
+          )}
           <button
             type="button"
             onClick={onClose}

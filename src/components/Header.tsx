@@ -7,6 +7,7 @@ interface HeaderProps {
   onSelectTab: (tab: 'client' | 'admin' | 'settings') => void;
   settings: AppSettings;
   pendingCount: number;
+  showSettingsTab?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -14,6 +15,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectTab,
   settings,
   pendingCount,
+  showSettingsTab = true,
 }) => {
   const isGasConfigured = Boolean(settings.gasWebAppUrl && settings.gasWebAppUrl.trim());
 
@@ -73,27 +75,31 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </button>
 
-            <button
-              type="button"
-              onClick={() => onSelectTab('settings')}
-              className={`flex items-center justify-center gap-1.5 px-3 py-2 sm:px-3.5 sm:py-2 text-xs sm:text-sm font-semibold rounded-lg transition-colors cursor-pointer min-h-[44px] ${
-                currentTab === 'settings'
-                  ? 'bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200/60'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <Settings className="w-4 h-4 shrink-0" />
-              <span className="hidden md:inline">Configurações &amp; GAS</span>
-              <span className="md:hidden">Config</span>
-            </button>
+            {showSettingsTab && (
+              <button
+                type="button"
+                onClick={() => onSelectTab('settings')}
+                className={`flex items-center justify-center gap-1.5 px-3 py-2 sm:px-3.5 sm:py-2 text-xs sm:text-sm font-semibold rounded-lg transition-colors cursor-pointer min-h-[44px] ${
+                  currentTab === 'settings'
+                    ? 'bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200/60'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
+              >
+                <Settings className="w-4 h-4 shrink-0" />
+                <span className="hidden md:inline">Configurações &amp; GAS</span>
+                <span className="md:hidden">Config</span>
+              </button>
+            )}
           </nav>
 
-          {/* Connection Indicator on Desktop */}
-          <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-500 shrink-0">
-            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-            <span>{isGasConfigured ? 'Sheets Conectado' : 'Planilha Local'}</span>
-            {isGasConfigured && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
-          </div>
+          {/* Connection Indicator on Desktop (visível apenas em ambiente com configurações ativas) */}
+          {showSettingsTab && (
+            <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-500 shrink-0">
+              <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+              <span>{isGasConfigured ? 'Sheets Conectado' : 'Planilha Local'}</span>
+              {isGasConfigured && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+            </div>
+          )}
         </div>
       </div>
     </header>
