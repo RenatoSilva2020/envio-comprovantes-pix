@@ -1,0 +1,6 @@
+{
+  "name": "PixSync - Gestor de Comprovantes Pix & Google Sheets",
+  "description": "Sistema para envio e validação de comprovantes Pix por CPF com integração direta ao Google Sheets via Google Apps Script (GAS) e painel administrativo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
