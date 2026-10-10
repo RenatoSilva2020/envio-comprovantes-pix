@@ -6,7 +6,7 @@ const RECEIPTS_KEY = 'pixsync_receipts_v1';
 const CLIENTS_KEY = 'pixsync_clients_v1';
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+  spreadsheetId: '',
   gasWebAppUrl: 'https://script.google.com/macros/s/AKfycbxdGaf01Bqah9zCI_TWnX88Q92mI8kqjIT55FbrcOLtmVUrEYaQsDkqPQN1MGkaBKCcww/exec',
   apiSecretToken: 'pix-sync-sec-2026',
   sheetName: 'Comprovantes_Pix',
@@ -187,7 +187,11 @@ export function getEffectiveDefaultSettings(): AppSettings {
     const rawDefault = localStorage.getItem(DEFAULT_STATE_KEY);
     if (rawDefault) {
       const parsedDefault = JSON.parse(rawDefault);
-      return { ...DEFAULT_SETTINGS, ...parsedDefault };
+      const effective = { ...DEFAULT_SETTINGS, ...parsedDefault };
+      if (effective.spreadsheetId === '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms') {
+        effective.spreadsheetId = '';
+      }
+      return effective;
     }
   } catch {
     // fallback
@@ -204,6 +208,9 @@ export function getSettings(): AppSettings {
     const merged = { ...baseDefaults, ...parsed };
     if (!merged.adminPassword || merged.adminPassword === 'admin') {
       merged.adminPassword = 'eemp2026';
+    }
+    if (merged.spreadsheetId === '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms') {
+      merged.spreadsheetId = '';
     }
     if (!merged.pixQrCodeUrl) {
       merged.pixQrCodeUrl = DEFAULT_SETTINGS.pixQrCodeUrl;

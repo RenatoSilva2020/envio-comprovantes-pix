@@ -8,6 +8,14 @@ export interface GasResponse<T = any> {
   driveUrl?: string;
 }
 
+function getCleanSpreadsheetId(settings: AppSettings): string {
+  const id = (settings.spreadsheetId || '').trim();
+  if (!id || id === '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms' || id === 'COLE_AQUI_O_ID_DA_PLANILHA') {
+    return '';
+  }
+  return id;
+}
+
 export async function testGasConnection(settings: AppSettings): Promise<{ ok: boolean; message: string }> {
   if (!settings.gasWebAppUrl || !settings.gasWebAppUrl.trim()) {
     return {
@@ -17,7 +25,9 @@ export async function testGasConnection(settings: AppSettings): Promise<{ ok: bo
   }
 
   const url = settings.gasWebAppUrl.trim();
-  const testUrl = `${url}${url.includes('?') ? '&' : '?'}action=ping&token=${encodeURIComponent(settings.apiSecretToken || '')}&spreadsheetId=${encodeURIComponent(settings.spreadsheetId || '')}&t=${Date.now()}`;
+  const cleanId = getCleanSpreadsheetId(settings);
+  const sheetParam = cleanId ? `&spreadsheetId=${encodeURIComponent(cleanId)}` : '';
+  const testUrl = `${url}${url.includes('?') ? '&' : '?'}action=ping&token=${encodeURIComponent(settings.apiSecretToken || '')}${sheetParam}&t=${Date.now()}`;
 
   try {
     const res = await fetch(testUrl, {
@@ -33,6 +43,12 @@ export async function testGasConnection(settings: AppSettings): Promise<{ ok: bo
         return {
           ok: true,
           message: data.message || `Conexão bem-sucedida! Planilha acessada: "${data.sheetTitle || 'Planilha do Google'}".`,
+        };
+      }
+      if (data && data.status === 'error') {
+        return {
+          ok: false,
+          message: data.message || 'Erro retornado pelo Google Apps Script.',
         };
       }
     }
@@ -62,10 +78,10 @@ export async function submitReceiptToGas(
     };
   }
 
-  const payload = {
+  const cleanId = getCleanSpreadsheetId(settings);
+  const payload: any = {
     action: 'submitReceipt',
     token: settings.apiSecretToken,
-    spreadsheetId: settings.spreadsheetId,
     sheetName: settings.sheetName,
     driveFolderId: settings.driveFolderId,
     driveFolderName: settings.driveFolderName,
@@ -88,6 +104,9 @@ export async function submitReceiptToGas(
       fileType: receipt.comprovantePix.type,
     },
   };
+  if (cleanId) {
+    payload.spreadsheetId = cleanId;
+  }
 
   try {
     const response = await fetch(settings.gasWebAppUrl.trim(), {
@@ -141,10 +160,10 @@ export async function submitBatchReceiptsToGas(
     };
   }
 
-  const payload = {
+  const cleanId = getCleanSpreadsheetId(settings);
+  const payload: any = {
     action: 'batchSubmit',
     token: settings.apiSecretToken,
-    spreadsheetId: settings.spreadsheetId,
     sheetName: settings.sheetName,
     driveFolderId: settings.driveFolderId,
     driveFolderName: settings.driveFolderName,
@@ -167,6 +186,9 @@ export async function submitBatchReceiptsToGas(
       fileType: receipt.comprovantePix?.type || '',
     })),
   };
+  if (cleanId) {
+    payload.spreadsheetId = cleanId;
+  }
 
   try {
     const response = await fetch(settings.gasWebAppUrl.trim(), {
@@ -226,16 +248,19 @@ export async function updateStatusInGas(
     };
   }
 
-  const payload = {
+  const cleanId = getCleanSpreadsheetId(settings);
+  const payload: any = {
     action: 'updateStatus',
     token: settings.apiSecretToken,
-    spreadsheetId: settings.spreadsheetId,
     sheetName: settings.sheetName,
     id: receiptId,
     status: newStatus,
     observacoes: observacoes,
     atualizadoEm: new Date().toISOString(),
   };
+  if (cleanId) {
+    payload.spreadsheetId = cleanId;
+  }
 
   try {
     const response = await fetch(settings.gasWebAppUrl.trim(), {
@@ -283,9 +308,11 @@ export async function fetchReceiptsFromGas(
   }
 
   const url = settings.gasWebAppUrl.trim();
+  const cleanId = getCleanSpreadsheetId(settings);
+  const sheetParam = cleanId ? `&spreadsheetId=${encodeURIComponent(cleanId)}` : '';
   const fetchUrl = `${url}${url.includes('?') ? '&' : '?'}action=getAll&token=${encodeURIComponent(
     settings.apiSecretToken || ''
-  )}&spreadsheetId=${encodeURIComponent(settings.spreadsheetId || '')}&sheetName=${encodeURIComponent(
+  )}${sheetParam}&sheetName=${encodeURIComponent(
     settings.sheetName || ''
   )}&t=${Date.now()}`;
 

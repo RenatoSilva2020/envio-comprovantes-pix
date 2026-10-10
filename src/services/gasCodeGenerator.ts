@@ -352,8 +352,21 @@ function saveAttachmentToDrive(base64Data, originalName, mimeType, receiptId, cp
  * Abre a planilha pelo ID ou usa a planilha ativa se o script estiver vinculado
  */
 function getSpreadsheet(spreadsheetId) {
-  if (spreadsheetId && spreadsheetId.trim() && spreadsheetId !== 'COLE_AQUI_O_ID_DA_PLANILHA') {
-    return SpreadsheetApp.openById(spreadsheetId.trim());
+  try {
+    var activeSs = SpreadsheetApp.getActiveSpreadsheet();
+    if (activeSs) {
+      return activeSs;
+    }
+  } catch (e) {
+    // Script Standalone
+  }
+
+  if (spreadsheetId && spreadsheetId.trim() && spreadsheetId !== 'COLE_AQUI_O_ID_DA_PLANILHA' && spreadsheetId !== '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms') {
+    try {
+      return SpreadsheetApp.openById(spreadsheetId.trim());
+    } catch (e) {
+      Logger.log('Aviso ao abrir planilha por ID: ' + e);
+    }
   }
   return SpreadsheetApp.getActiveSpreadsheet();
 }
