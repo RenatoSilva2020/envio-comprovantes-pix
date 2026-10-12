@@ -18,7 +18,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   pixQrCodeUrl: 'https://i.ibb.co/N6zcpGFL/pix-eemp.png',
   pixCopiaECola: '00020101021126510014br.gov.bcb.pix0111393750566000214PGTOMARIOPORTO5204000053039865802BR5921EUNICE ABADIA MARTINS6010UBERLANDIA62070503***6304CCB3',
   pixFavorecido: 'EUNICE ABADIA MARTINS',
-  cartazInstrucoesUrl: 'https://i.ibb.co/4ZSbNDSz/Cartaz-Pagamento.png',
+  cartazInstrucoesUrl: 'https://i.ibb.co/qF5mBLmH/tutorial-pix.jpg',
   referenciasPredefinidas: [
     { id: 'ref-1', label: 'À VISTA (OUTUBRO)', valor: 110.0 },
     { id: 'ref-2', label: 'À VISTA (NOVEMBRO)', valor: 115.0 },
