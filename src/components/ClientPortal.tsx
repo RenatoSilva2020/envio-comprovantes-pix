@@ -1206,7 +1206,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
                   <li>Abra o aplicativo do seu banco e acesse a área <strong>Pix</strong>.</li>
                   <li>Utilize a opção <strong>Pix Copia e Cola</strong> (ou aponte a câmera para o QR Code acima).</li>
                   <li>Confirme o nome da favorecida: <strong>{pixFavorecido}</strong>.</li>
-                  <li>Conclua o pagamento, salve o comprovante gerado (imagem ou PDF) e em seguida acerte seu CPF para enviar!</li>
+                  <li>Conclua o pagamento, salve o comprovante gerado (imagem ou PDF) e em seguida entre com seu CPF para enviar!</li>
                 </ol>
               </div>
             </div>
