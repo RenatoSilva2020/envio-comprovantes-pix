@@ -20,12 +20,11 @@ export const DEFAULT_SETTINGS: AppSettings = {
   pixFavorecido: 'EUNICE ABADIA MARTINS',
   cartazInstrucoesUrl: 'https://i.ibb.co/4ZSbNDSz/Cartaz-Pagamento.png',
   referenciasPredefinidas: [
-    { id: 'ref-1', label: 'À VISTA (OUTUBRO)', valor: 110.0 },
-    { id: 'ref-2', label: 'À VISTA (NOVEMBRO)', valor: 115.0 },
-    { id: 'ref-3', label: 'À VISTA (DEZEMBRO)', valor: 120.0 },
-    { id: 'ref-4', label: 'À VISTA (CRIANÇA)', valor: 70.0 },
-    { id: 'ref-5', label: 'PARCELA (ADULTO)', valor: 40.0 },
-    { id: 'ref-6', label: 'PARCELA (CRIANÇA)', valor: 25.0 },
+    { id: 'ref-1', label: 'À VISTA (NOVEMBRO)', valor: 115.0 },
+    { id: 'ref-2', label: 'À VISTA (DEZEMBRO)', valor: 120.0 },
+    { id: 'ref-3', label: 'À VISTA (CRIANÇA)', valor: 70.0 },
+    { id: 'ref-4', label: 'PARCELA (ADULTO)', valor: 40.0 },
+    { id: 'ref-5', label: 'PARCELA (CRIANÇA)', valor: 25.0 },
   ],
 };
 
@@ -223,6 +222,7 @@ export function getSettings(): AppSettings {
           !r.label ||
           r.valor === 0 ||
           !r.valor ||
+          r.label.includes('OUTUBRO') ||
           r.label.includes('Mensalidade') ||
           r.label.includes('Matrícula') ||
           r.label.includes('Diploma') ||
@@ -256,17 +256,17 @@ export function resetToDefaultSettings(): AppSettings {
 }
 
 // Chave de versão para atualização imediata em clientes com cache
-const CONFIG_VERSION_KEY = 'pixsync_config_version_v7';
+const CONFIG_VERSION_KEY = 'pixsync_config_version_v8';
 
 // Inicializa e sincroniza o estado atual como padrão definitivo do sistema
 export function syncCurrentStateAsPermanentDefault(): void {
   try {
     if (typeof window !== 'undefined') {
       const version = localStorage.getItem(CONFIG_VERSION_KEY);
-      if (version !== 'v7') {
+      if (version !== 'v8') {
         localStorage.setItem(DEFAULT_STATE_KEY, JSON.stringify(DEFAULT_SETTINGS));
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(DEFAULT_SETTINGS));
-        localStorage.setItem(CONFIG_VERSION_KEY, 'v7');
+        localStorage.setItem(CONFIG_VERSION_KEY, 'v8');
         return;
       }
       const currentRaw = localStorage.getItem(SETTINGS_KEY);

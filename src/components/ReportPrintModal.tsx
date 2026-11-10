@@ -222,7 +222,7 @@ export const ReportPrintModal: React.FC<ReportPrintModalProps> = ({
             </div>
           </div>
 
-          {/* Table */}
+          {/* Table agrupada por CPF com subtotais */}
           <div className="border border-slate-200 rounded-lg overflow-x-auto">
             <table className="w-full text-xs text-left min-w-[500px]">
               <thead className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
@@ -244,37 +244,87 @@ export const ReportPrintModal: React.FC<ReportPrintModalProps> = ({
                     </td>
                   </tr>
                 ) : (
-                  receipts.map((r) => (
-                    <tr key={r.id} className="hover:bg-slate-50">
-                      <td className="py-2 px-3 font-semibold text-slate-800">{r.id}</td>
-                      <td className="py-2 px-3 font-sans text-slate-600">
-                        {new Date(r.data).toLocaleDateString('pt-BR')}
-                      </td>
-                      <td className="py-2 px-3 text-slate-700">{formatCPF(r.cpf)}</td>
-                      <td className="py-2 px-3 font-sans text-slate-800 truncate max-w-[120px]">
-                        {r.nomeServidor || '-'}
-                      </td>
-                      <td className="py-2 px-3 font-sans text-slate-700 truncate max-w-[140px]">
-                        {r.referencia}
-                      </td>
-                      <td className="py-2 px-3 font-bold text-right text-emerald-700 tabular-nums">
-                        {formatBRL(r.valorPagamento)}
-                      </td>
-                      <td className="py-2 px-3 font-sans text-center">
-                        <span
-                          className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            r.status === 'CONFIRMADO'
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : r.status === 'REJEITADO'
-                              ? 'bg-rose-100 text-rose-800'
-                              : 'bg-amber-100 text-amber-800'
-                          }`}
-                        >
-                          {r.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
+                  (() => {
+                    const grouped = new Map<string, { formattedCpf: string; nome: string; items: PixReceipt[] }>();
+                    receipts.forEach((r) => {
+                      const key = (r.cpf || '').replace(/\D/g, '') || 'SEM_CPF';
+                      if (!grouped.has(key)) {
+                        grouped.set(key, {
+                          formattedCpf: formatCPF(r.cpf),
+                          nome: r.nomeServidor || 'Não informado',
+                          items: [],
+                        });
+                      }
+                      const g = grouped.get(key)!;
+                      if ((!g.nome || g.nome === 'Não informado') && r.nomeServidor) {
+                        g.nome = r.nomeServidor;
+                      }
+                      g.items.push(r);
+                    });
+
+                    return Array.from(grouped.values()).map((grp) => {
+                      const subtotal = grp.items.reduce((acc, curr) => acc + (Number(curr.valorPagamento) || 0), 0);
+                      const subtotalConfirmado = grp.items
+                        .filter((i) => i.status === 'CONFIRMADO')
+                        .reduce((acc, curr) => acc + (Number(curr.valorPagamento) || 0), 0);
+
+                      return (
+                        <React.Fragment key={grp.formattedCpf}>
+                          {/* Cabeçalho do Grupo por CPF */}
+                          <tr className="bg-slate-100/90 font-sans font-bold text-slate-900 border-t border-b border-slate-300">
+                            <td colSpan={7} className="py-2 px-3 text-[11px] tracking-wide">
+                              CLIENTE / CPF: <span className="font-mono text-emerald-800">{grp.formattedCpf}</span> — {grp.nome.toUpperCase()} ({grp.items.length} {grp.items.length === 1 ? 'comprovante' : 'comprovantes'})
+                            </td>
+                          </tr>
+
+                          {/* Itens do Cliente */}
+                          {grp.items.map((r) => (
+                            <tr key={r.id} className="hover:bg-slate-50">
+                              <td className="py-2 px-3 font-semibold text-slate-800">{r.id}</td>
+                              <td className="py-2 px-3 font-sans text-slate-600">
+                                {new Date(r.data).toLocaleDateString('pt-BR')}
+                              </td>
+                              <td className="py-2 px-3 text-slate-700">{formatCPF(r.cpf)}</td>
+                              <td className="py-2 px-3 font-sans text-slate-800 truncate max-w-[120px]">
+                                {r.nomeServidor || '-'}
+                              </td>
+                              <td className="py-2 px-3 font-sans text-slate-700 truncate max-w-[140px]">
+                                {r.referencia}
+                              </td>
+                              <td className="py-2 px-3 font-bold text-right text-emerald-700 tabular-nums">
+                                {formatBRL(r.valorPagamento)}
+                              </td>
+                              <td className="py-2 px-3 font-sans text-center">
+                                <span
+                                  className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                    r.status === 'CONFIRMADO'
+                                      ? 'bg-emerald-100 text-emerald-800'
+                                      : r.status === 'REJEITADO'
+                                      ? 'bg-rose-100 text-rose-800'
+                                      : 'bg-amber-100 text-amber-800'
+                                  }`}
+                                >
+                                  {r.status}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+
+                          {/* Subtotal do CPF */}
+                          <tr className="bg-emerald-50/60 font-sans font-bold text-slate-900 border-b-2 border-slate-300">
+                            <td colSpan={5} className="py-2 px-3 text-right text-xs">
+                              SUBTOTAL CPF {grp.formattedCpf} ({grp.items.length} {grp.items.length === 1 ? 'item' : 'itens'}
+                              {subtotalConfirmado > 0 ? ` · Conf: ${formatBRL(subtotalConfirmado)}` : ''}):
+                            </td>
+                            <td className="py-2 px-3 font-bold text-right text-emerald-800 font-mono tabular-nums text-xs">
+                              {formatBRL(subtotal)}
+                            </td>
+                            <td></td>
+                          </tr>
+                        </React.Fragment>
+                      );
+                    });
+                  })()
                 )}
               </tbody>
             </table>

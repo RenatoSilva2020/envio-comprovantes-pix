@@ -109,17 +109,74 @@ export function generateReportPdf(
   const sheetLabel = settings.sheetName || 'Comprovantes_Pix';
   doc.text(`Guia: ${sheetLabel.slice(0, 18)}`, 17 + (cardW + 3) * 3, kpiY + 12);
 
-  // 3. Tabela de Transações
-  const tableData = receipts.map((r) => [
-    r.id,
-    new Date(r.data).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }),
-    formatCPF(r.cpf),
-    r.nomeServidor || 'Não informado',
-    r.referencia || '-',
-    formatBRL(Number(r.valorPagamento) || 0),
-    r.status,
-    r.observacoes || r.observacaoCliente || '-',
-  ]);
+  // 3. Tabela de Transações Agrupadas por CPF com Subtotal
+  // Agrupa os comprovantes por CPF normalizado
+  const groupedByCpf = new Map<string, { formattedCpf: string; nome: string; items: PixReceipt[] }>();
+
+  receipts.forEach((r) => {
+    const key = (r.cpf || '').replace(/\D/g, '') || 'SEM_CPF';
+    if (!groupedByCpf.has(key)) {
+      groupedByCpf.set(key, {
+        formattedCpf: formatCPF(r.cpf),
+        nome: r.nomeServidor || 'Não informado',
+        items: [],
+      });
+    }
+    const group = groupedByCpf.get(key)!;
+    if ((!group.nome || group.nome === 'Não informado') && r.nomeServidor) {
+      group.nome = r.nomeServidor;
+    }
+    group.items.push(r);
+  });
+
+  // Constrói as linhas com cabeçalho de grupo e linha de subtotal por CPF
+  const tableBody: any[] = [];
+  const groupHeaderRowIndexes = new Set<number>();
+  const subtotalRowIndexes = new Set<number>();
+
+  Array.from(groupedByCpf.values()).forEach((grp) => {
+    const subtotal = grp.items.reduce((sum, item) => sum + (Number(item.valorPagamento) || 0), 0);
+    const subtotalConfirmado = grp.items
+      .filter((i) => i.status === 'CONFIRMADO')
+      .reduce((sum, item) => sum + (Number(item.valorPagamento) || 0), 0);
+
+    // Linha de Cabeçalho do Grupo (CPF + Nome + Quantidade de comprovantes)
+    const headerRowIdx = tableBody.length;
+    groupHeaderRowIndexes.add(headerRowIdx);
+    tableBody.push([
+      {
+        content: `CLIENTE / CPF: ${grp.formattedCpf}  —  ${grp.nome.toUpperCase()} (${grp.items.length} ${grp.items.length === 1 ? 'comprovante' : 'comprovantes'})`,
+        colSpan: 8,
+      },
+    ]);
+
+    // Linhas de Comprovantes do CPF
+    grp.items.forEach((r) => {
+      tableBody.push([
+        r.id,
+        new Date(r.data).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }),
+        formatCPF(r.cpf),
+        r.nomeServidor || 'Não informado',
+        r.referencia || '-',
+        formatBRL(Number(r.valorPagamento) || 0),
+        r.status,
+        r.observacoes || r.observacaoCliente || '-',
+      ]);
+    });
+
+    // Linha de Subtotal por CPF
+    const subtotalRowIdx = tableBody.length;
+    subtotalRowIndexes.add(subtotalRowIdx);
+    tableBody.push([
+      {
+        content: `SUBTOTAL CPF ${grp.formattedCpf} (${grp.items.length} ${grp.items.length === 1 ? 'item' : 'itens'}${subtotalConfirmado > 0 ? ` · Conf: ${formatBRL(subtotalConfirmado)}` : ''}):`,
+        colSpan: 5,
+      },
+      formatBRL(subtotal),
+      '',
+      '',
+    ]);
+  });
 
   autoTable(doc, {
     startY: 48,
@@ -133,7 +190,7 @@ export function generateReportPdf(
       'STATUS',
       'OBSERVAÇÕES',
     ]],
-    body: tableData,
+    body: tableBody,
     theme: 'grid',
     styles: {
       fontSize: 8,
@@ -161,7 +218,32 @@ export function generateReportPdf(
       7: { cellWidth: 'auto' }, // Obs
     },
     didParseCell: (data) => {
-      // Destaque de cor no status
+      // Estilização das linhas de cabeçalho do grupo CPF
+      if (data.section === 'body' && groupHeaderRowIndexes.has(data.row.index)) {
+        data.cell.styles.fillColor = [226, 232, 240]; // slate-200
+        data.cell.styles.textColor = [15, 23, 42]; // slate-900
+        data.cell.styles.fontStyle = 'bold';
+        data.cell.styles.fontSize = 8.5;
+        return;
+      }
+
+      // Estilização das linhas de Subtotal por CPF
+      if (data.section === 'body' && subtotalRowIndexes.has(data.row.index)) {
+        data.cell.styles.fillColor = [241, 245, 249]; // slate-100
+        data.cell.styles.textColor = [15, 23, 42];
+        data.cell.styles.fontStyle = 'bold';
+        if (data.column.index === 0) {
+          data.cell.styles.halign = 'right';
+        }
+        if (data.column.index === 1 || data.column.index === 5) {
+          data.cell.styles.textColor = [5, 150, 105]; // emerald-600
+          data.cell.styles.halign = 'right';
+          data.cell.styles.fontSize = 8.5;
+        }
+        return;
+      }
+
+      // Destaque de cor no status nas linhas normais
       if (data.section === 'body' && data.column.index === 6) {
         const val = String(data.cell.raw).toUpperCase();
         if (val === 'CONFIRMADO') {
