@@ -97,14 +97,20 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
   const [isInitialPixModalOpen, setIsInitialPixModalOpen] = useState<boolean>(false);
   const [isInstructionsModalOpen, setIsInstructionsModalOpen] = useState<boolean>(false);
 
-  const pixQrCodeUrl = settings.pixQrCodeUrl || 'https://i.ibb.co/N6zcpGFL/pix-eemp.png';
+  const rawPixQrCodeUrl = settings.pixQrCodeUrl || 'https://i.ibb.co/0psz0q7T/qr-pix.png';
+  const pixQrCodeUrl = rawPixQrCodeUrl.startsWith('http://i.ibb.co/')
+    ? rawPixQrCodeUrl.replace('http://i.ibb.co/', 'https://i.ibb.co/')
+    : rawPixQrCodeUrl;
   const pixCopiaECola =
     settings.pixCopiaECola ||
     '00020101021126510014br.gov.bcb.pix0111393750566000214PGTOMARIOPORTO5204000053039865802BR5921EUNICE ABADIA MARTINS6010UBERLANDIA62070503***6304CCB3';
   const pixFavorecido = settings.pixFavorecido || 'EUNICE ABADIA MARTINS';
-  const cartazInstrucoesUrl =
+  const rawCartazUrl =
     settings.cartazInstrucoesUrl ||
-    'https://i.ibb.co/4ZSbNDSz/Cartaz-Pagamento.png';
+    'https://i.ibb.co/rBmXnc7/info-pix.png';
+  const cartazInstrucoesUrl = rawCartazUrl.startsWith('http://i.ibb.co/')
+    ? rawCartazUrl.replace('http://i.ibb.co/', 'https://i.ibb.co/')
+    : rawCartazUrl;
 
   const handleCopyPix = async () => {
     try {

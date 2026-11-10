@@ -158,48 +158,48 @@ export const ReportPrintModal: React.FC<ReportPrintModalProps> = ({
         </div>
 
         {/* Printable Paper View */}
-        <div className="p-4 sm:p-8 space-y-4 sm:space-y-6 text-slate-800 bg-white overflow-y-auto flex-1">
+        <div className="p-4 sm:p-8 space-y-4 sm:space-y-6 text-slate-800 bg-white overflow-y-auto flex-1 font-sans">
           {/* Header */}
-          <div className="border-b-2 border-slate-800 pb-4 flex flex-col sm:flex-row justify-between sm:items-start gap-2">
+          <div className="border-b-2 border-slate-900 pb-4 flex flex-col sm:flex-row justify-between sm:items-start gap-3">
             <div>
-              <span className="text-xs uppercase tracking-widest text-emerald-700 font-bold block">
-                {settings.institutionName || 'Sistema PixSync'}
-              </span>
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 mt-0.5">
-                Relatório de Comprovantes de Pagamento Pix
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold tracking-wider uppercase mb-1">
+                Relatório Oficial de Pagamentos
+              </div>
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
+                {settings.institutionName || 'Escola Estadual Mário Porto (EEMP)'}
               </h1>
-              <p className="text-xs text-slate-500 mt-1">
-                Planilha: {settings.spreadsheetId.slice(0, 16)}... · Aba: {settings.sheetName}
+              <p className="text-xs text-slate-500 mt-0.5">
+                Painel Gerencial de Prestação de Contas · Planilha Google: <strong>{settings.sheetName || 'Comprovantes_Pix'}</strong>
               </p>
             </div>
-            <div className="text-left sm:text-right text-xs text-slate-500">
-              <p>Gerado em: <strong>{new Date().toLocaleString('pt-BR')}</strong></p>
-              <p>Total de Registros: <strong>{receipts.length}</strong></p>
+            <div className="text-left sm:text-right text-xs text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+              <p>Emissão: <strong className="text-slate-800">{new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</strong></p>
+              <p>Lançamentos: <strong className="text-emerald-700">{receipts.length} comprovantes</strong></p>
             </div>
           </div>
 
           {/* Active Filter Summary */}
-          <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div>
-              <span className="text-slate-400 block font-medium">FILTRO CPF:</span>
+              <span className="text-slate-400 block text-[10px] font-bold tracking-wider uppercase">Filtro CPF</span>
               <span className="font-semibold text-slate-800">
                 {filters.cpf ? formatCPF(filters.cpf) : 'Todos os CPFs'}
               </span>
             </div>
             <div>
-              <span className="text-slate-400 block font-medium">PERÍODO INICIAL:</span>
+              <span className="text-slate-400 block text-[10px] font-bold tracking-wider uppercase">Período Inicial</span>
               <span className="font-semibold text-slate-800">
                 {filters.startDate ? new Date(filters.startDate).toLocaleDateString('pt-BR') : 'Sem limite'}
               </span>
             </div>
             <div>
-              <span className="text-slate-400 block font-medium">PERÍODO FINAL:</span>
+              <span className="text-slate-400 block text-[10px] font-bold tracking-wider uppercase">Período Final</span>
               <span className="font-semibold text-slate-800">
                 {filters.endDate ? new Date(filters.endDate).toLocaleDateString('pt-BR') : 'Sem limite'}
               </span>
             </div>
             <div>
-              <span className="text-slate-400 block font-medium">STATUS FILTRADO:</span>
+              <span className="text-slate-400 block text-[10px] font-bold tracking-wider uppercase">Status</span>
               <span className="font-semibold text-slate-800">
                 {filters.status || 'Todos'}
               </span>
@@ -208,35 +208,40 @@ export const ReportPrintModal: React.FC<ReportPrintModalProps> = ({
 
           {/* KPI Summary Banner */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-              <span className="text-[11px] font-medium text-slate-500 uppercase">Total de Transações</span>
-              <p className="text-xl font-bold text-slate-800 mt-0.5 tabular-nums">{receipts.length}</p>
+            <div className="border border-slate-200 rounded-xl p-3.5 bg-slate-50/70">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Volume Total</span>
+              <p className="text-2xl font-black text-slate-900 mt-1 tabular-nums">{formatBRL(totalValor)}</p>
+              <span className="text-[10px] text-slate-400">{receipts.length} transações</span>
             </div>
-            <div className="border border-slate-200 rounded-lg p-3 bg-emerald-50/50">
-              <span className="text-[11px] font-medium text-emerald-800 uppercase">Total Confirmado</span>
-              <p className="text-xl font-bold text-emerald-700 mt-0.5 tabular-nums">{formatBRL(totalConfirmado)}</p>
+            <div className="border border-emerald-200 rounded-xl p-3.5 bg-emerald-50/70">
+              <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Confirmados</span>
+              <p className="text-2xl font-black text-emerald-700 mt-1 tabular-nums">{formatBRL(totalConfirmado)}</p>
+              <span className="text-[10px] text-emerald-600 font-medium">Validado no extrato</span>
             </div>
-            <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-              <span className="text-[11px] font-medium text-slate-500 uppercase">Volume Bruto Listado</span>
-              <p className="text-xl font-bold text-slate-900 mt-0.5 tabular-nums">{formatBRL(totalValor)}</p>
+            <div className="border border-amber-200 rounded-xl p-3.5 bg-amber-50/70">
+              <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Pendentes</span>
+              <p className="text-2xl font-black text-amber-700 mt-1 tabular-nums">
+                {formatBRL(receipts.filter((r) => r.status === 'PENDENTE').reduce((acc, curr) => acc + (Number(curr.valorPagamento) || 0), 0))}
+              </p>
+              <span className="text-[10px] text-amber-600 font-medium">Aguardando conferência</span>
             </div>
           </div>
 
-          {/* Table agrupada por CPF com subtotais */}
-          <div className="border border-slate-200 rounded-lg overflow-x-auto">
-            <table className="w-full text-xs text-left min-w-[500px]">
-              <thead className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+          {/* Table agrupada por CPF com subtotais e linhas de grade clean */}
+          <div className="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+            <table className="w-full text-xs text-left min-w-[500px] border-collapse">
+              <thead className="bg-slate-900 text-white font-bold">
                 <tr>
-                  <th className="py-2.5 px-3">ID</th>
-                  <th className="py-2.5 px-3">Data</th>
-                  <th className="py-2.5 px-3">CPF</th>
-                  <th className="py-2.5 px-3">Servidor</th>
-                  <th className="py-2.5 px-3">Referência</th>
-                  <th className="py-2.5 px-3 text-right">Valor</th>
-                  <th className="py-2.5 px-3 text-center">Status</th>
+                  <th className="py-2.5 px-3 font-semibold text-[11px] tracking-wider uppercase border-r border-slate-800">ID Comprovante</th>
+                  <th className="py-2.5 px-3 font-semibold text-[11px] tracking-wider uppercase border-r border-slate-800">Data / Hora</th>
+                  <th className="py-2.5 px-3 font-semibold text-[11px] tracking-wider uppercase border-r border-slate-800">CPF Cliente</th>
+                  <th className="py-2.5 px-3 font-semibold text-[11px] tracking-wider uppercase border-r border-slate-800">Titular</th>
+                  <th className="py-2.5 px-3 font-semibold text-[11px] tracking-wider uppercase border-r border-slate-800">Referência</th>
+                  <th className="py-2.5 px-3 font-semibold text-[11px] tracking-wider uppercase border-r border-slate-800 text-right">Valor</th>
+                  <th className="py-2.5 px-3 font-semibold text-[11px] tracking-wider uppercase text-center">Situação</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 font-mono">
+              <tbody className="divide-y divide-slate-200 font-sans">
                 {receipts.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-8 text-center text-slate-400 font-sans">
@@ -271,37 +276,44 @@ export const ReportPrintModal: React.FC<ReportPrintModalProps> = ({
                       return (
                         <React.Fragment key={grp.formattedCpf}>
                           {/* Cabeçalho do Grupo por CPF */}
-                          <tr className="bg-slate-100/90 font-sans font-bold text-slate-900 border-t border-b border-slate-300">
-                            <td colSpan={7} className="py-2 px-3 text-[11px] tracking-wide">
-                              CLIENTE / CPF: <span className="font-mono text-emerald-800">{grp.formattedCpf}</span> — {grp.nome.toUpperCase()} ({grp.items.length} {grp.items.length === 1 ? 'comprovante' : 'comprovantes'})
+                          <tr className="bg-slate-100 font-bold text-slate-900 border-t-2 border-b border-slate-300">
+                            <td colSpan={7} className="py-2 px-3 text-xs tracking-tight">
+                              <span className="text-slate-500 uppercase text-[10px] tracking-wider mr-1.5 font-semibold">Titular:</span>
+                              <span className="text-slate-900 font-bold">{grp.nome.toUpperCase()}</span>
+                              <span className="mx-2 text-slate-300">|</span>
+                              <span className="text-slate-500 uppercase text-[10px] tracking-wider mr-1.5 font-semibold">CPF:</span>
+                              <span className="font-mono text-emerald-800 font-bold">{grp.formattedCpf}</span>
+                              <span className="ml-2 text-slate-500 text-[11px] font-normal">
+                                ({grp.items.length} {grp.items.length === 1 ? 'comprovante' : 'comprovantes'})
+                              </span>
                             </td>
                           </tr>
 
-                          {/* Itens do Cliente */}
+                          {/* Itens do Cliente com fundo branco puro e linhas de grade clean */}
                           {grp.items.map((r) => (
-                            <tr key={r.id} className="hover:bg-slate-50">
-                              <td className="py-2 px-3 font-semibold text-slate-800">{r.id}</td>
-                              <td className="py-2 px-3 font-sans text-slate-600">
-                                {new Date(r.data).toLocaleDateString('pt-BR')}
+                            <tr key={r.id} className="bg-white hover:bg-slate-50">
+                              <td className="py-2 px-3 font-semibold text-slate-800 text-[11px] border-r border-slate-200">{r.id}</td>
+                              <td className="py-2 px-3 text-slate-600 text-[11px] border-r border-slate-200">
+                                {new Date(r.data).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
                               </td>
-                              <td className="py-2 px-3 text-slate-700">{formatCPF(r.cpf)}</td>
-                              <td className="py-2 px-3 font-sans text-slate-800 truncate max-w-[120px]">
+                              <td className="py-2 px-3 text-slate-700 font-mono text-[11px] border-r border-slate-200">{formatCPF(r.cpf)}</td>
+                              <td className="py-2 px-3 font-medium text-slate-800 truncate max-w-[120px] border-r border-slate-200">
                                 {r.nomeServidor || '-'}
                               </td>
-                              <td className="py-2 px-3 font-sans text-slate-700 truncate max-w-[140px]">
+                              <td className="py-2 px-3 text-slate-700 truncate max-w-[140px] border-r border-slate-200">
                                 {r.referencia}
                               </td>
-                              <td className="py-2 px-3 font-bold text-right text-emerald-700 tabular-nums">
+                              <td className="py-2 px-3 font-bold text-right text-emerald-700 tabular-nums border-r border-slate-200">
                                 {formatBRL(r.valorPagamento)}
                               </td>
-                              <td className="py-2 px-3 font-sans text-center">
+                              <td className="py-2 px-3 text-center">
                                 <span
                                   className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
                                     r.status === 'CONFIRMADO'
-                                      ? 'bg-emerald-100 text-emerald-800'
+                                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                                       : r.status === 'REJEITADO'
-                                      ? 'bg-rose-100 text-rose-800'
-                                      : 'bg-amber-100 text-amber-800'
+                                      ? 'bg-rose-50 text-rose-800 border border-rose-200'
+                                      : 'bg-amber-50 text-amber-800 border border-amber-200'
                                   }`}
                                 >
                                   {r.status}
@@ -311,15 +323,15 @@ export const ReportPrintModal: React.FC<ReportPrintModalProps> = ({
                           ))}
 
                           {/* Subtotal do CPF */}
-                          <tr className="bg-emerald-50/60 font-sans font-bold text-slate-900 border-b-2 border-slate-300">
-                            <td colSpan={5} className="py-2 px-3 text-right text-xs">
-                              SUBTOTAL CPF {grp.formattedCpf} ({grp.items.length} {grp.items.length === 1 ? 'item' : 'itens'}
+                          <tr className="bg-slate-50/80 font-bold text-slate-900 border-b border-slate-300">
+                            <td colSpan={5} className="py-2 px-3 text-right text-xs text-slate-700 border-r border-slate-200">
+                              Subtotal {grp.formattedCpf} ({grp.items.length} {grp.items.length === 1 ? 'item' : 'itens'}
                               {subtotalConfirmado > 0 ? ` · Conf: ${formatBRL(subtotalConfirmado)}` : ''}):
                             </td>
-                            <td className="py-2 px-3 font-bold text-right text-emerald-800 font-mono tabular-nums text-xs">
+                            <td className="py-2 px-3 font-black text-right text-emerald-700 tabular-nums text-xs border-r border-slate-200">
                               {formatBRL(subtotal)}
                             </td>
-                            <td></td>
+                            <td className="bg-slate-50/80"></td>
                           </tr>
                         </React.Fragment>
                       );

@@ -440,11 +440,11 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   </label>
                   <input
                     type="text"
-                    value={formData.pixQrCodeUrl || 'https://i.ibb.co/N6zcpGFL/pix-eemp.png'}
+                    value={formData.pixQrCodeUrl || 'https://i.ibb.co/0psz0q7T/qr-pix.png'}
                     onChange={(e) =>
                       setFormData({ ...formData, pixQrCodeUrl: e.target.value.trim() })
                     }
-                    placeholder="https://i.ibb.co/N6zcpGFL/pix-eemp.png"
+                    placeholder="https://i.ibb.co/0psz0q7T/qr-pix.png"
                     className="w-full px-3.5 py-2.5 text-xs font-mono border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden bg-white"
                   />
                   <p className="text-[11px] text-slate-400 mt-1">Link direto da imagem do QR Code</p>
@@ -477,9 +477,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <label className="block font-bold text-sky-950 uppercase tracking-wider text-xs">
                     Cartaz / Imagem de Instruções (Tela de Entrada)
                   </label>
-                  {(formData.cartazInstrucoesUrl || 'https://i.ibb.co/4ZSbNDSz/Cartaz-Pagamento.png') && (
+                  {(formData.cartazInstrucoesUrl || 'https://i.ibb.co/rBmXnc7/info-pix.png') && (
                     <a
-                      href={formData.cartazInstrucoesUrl || 'https://i.ibb.co/4ZSbNDSz/Cartaz-Pagamento.png'}
+                      href={formData.cartazInstrucoesUrl || 'https://i.ibb.co/rBmXnc7/info-pix.png'}
                       target="_blank"
                       rel="noreferrer"
                       className="text-xs text-sky-700 hover:text-sky-900 font-semibold inline-flex items-center gap-1 hover:underline"
@@ -493,12 +493,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   type="text"
                   value={
                     formData.cartazInstrucoesUrl ??
-                    'https://i.ibb.co/4ZSbNDSz/Cartaz-Pagamento.png'
+                    'https://i.ibb.co/rBmXnc7/info-pix.png'
                   }
                   onChange={(e) =>
                     setFormData({ ...formData, cartazInstrucoesUrl: e.target.value.trim() })
                   }
-                  placeholder="https://i.ibb.co/4ZSbNDSz/Cartaz-Pagamento.png"
+                  placeholder="https://i.ibb.co/rBmXnc7/info-pix.png"
                   className="w-full px-3.5 py-2.5 text-xs font-mono border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-hidden bg-white"
                 />
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px] text-slate-500">
@@ -510,7 +510,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     onClick={() =>
                       setFormData({
                         ...formData,
-                        cartazInstrucoesUrl: 'https://i.ibb.co/4ZSbNDSz/Cartaz-Pagamento.png',
+                        cartazInstrucoesUrl: 'https://i.ibb.co/rBmXnc7/info-pix.png',
                       })
                     }
                     className="text-sky-700 hover:underline font-semibold shrink-0 cursor-pointer"
@@ -522,7 +522,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 {/* Prévia da imagem */}
                 <div className="pt-2 flex items-center gap-3">
                   <img
-                    src={formData.cartazInstrucoesUrl || 'https://i.ibb.co/4ZSbNDSz/Cartaz-Pagamento.png'}
+                    src={formData.cartazInstrucoesUrl || 'https://i.ibb.co/rBmXnc7/info-pix.png'}
                     alt="Prévia do cartaz"
                     className="w-14 h-14 object-cover rounded-lg border border-slate-300 bg-white shadow-2xs"
                     onError={(e) => {

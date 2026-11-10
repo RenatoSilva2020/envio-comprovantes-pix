@@ -15,10 +15,10 @@ export const DEFAULT_SETTINGS: AppSettings = {
   institutionName: 'Escola Estadual Mário Porto (EEMP)',
   autoSyncWithGas: true,
   adminPassword: 'eemp2026',
-  pixQrCodeUrl: 'https://i.ibb.co/N6zcpGFL/pix-eemp.png',
+  pixQrCodeUrl: 'https://i.ibb.co/0psz0q7T/qr-pix.png',
   pixCopiaECola: '00020101021126510014br.gov.bcb.pix0111393750566000214PGTOMARIOPORTO5204000053039865802BR5921EUNICE ABADIA MARTINS6010UBERLANDIA62070503***6304CCB3',
   pixFavorecido: 'EUNICE ABADIA MARTINS',
-  cartazInstrucoesUrl: 'https://i.ibb.co/4ZSbNDSz/Cartaz-Pagamento.png',
+  cartazInstrucoesUrl: 'https://i.ibb.co/rBmXnc7/info-pix.png',
   referenciasPredefinidas: [
     { id: 'ref-1', label: 'À VISTA (NOVEMBRO)', valor: 115.0 },
     { id: 'ref-2', label: 'À VISTA (DEZEMBRO)', valor: 120.0 },
@@ -198,7 +198,7 @@ export function getSettings(): AppSettings {
     if (merged.spreadsheetId === '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms') {
       merged.spreadsheetId = '';
     }
-    if (!merged.pixQrCodeUrl) {
+    if (!merged.pixQrCodeUrl || merged.pixQrCodeUrl.includes('pix-eemp.png')) {
       merged.pixQrCodeUrl = DEFAULT_SETTINGS.pixQrCodeUrl;
     }
     if (!merged.pixCopiaECola) {
@@ -210,7 +210,7 @@ export function getSettings(): AppSettings {
     if (!merged.gasWebAppUrl) {
       merged.gasWebAppUrl = DEFAULT_SETTINGS.gasWebAppUrl;
     }
-    if (!merged.cartazInstrucoesUrl) {
+    if (!merged.cartazInstrucoesUrl || merged.cartazInstrucoesUrl.includes('Cartaz-Pagamento.png')) {
       merged.cartazInstrucoesUrl = DEFAULT_SETTINGS.cartazInstrucoesUrl;
     }
     // Garante que a lista de referências pré-definidas contenha exatamente as opções e valores oficiais solicitados
@@ -256,17 +256,17 @@ export function resetToDefaultSettings(): AppSettings {
 }
 
 // Chave de versão para atualização imediata em clientes com cache
-const CONFIG_VERSION_KEY = 'pixsync_config_version_v8';
+const CONFIG_VERSION_KEY = 'pixsync_config_version_v10';
 
 // Inicializa e sincroniza o estado atual como padrão definitivo do sistema
 export function syncCurrentStateAsPermanentDefault(): void {
   try {
     if (typeof window !== 'undefined') {
       const version = localStorage.getItem(CONFIG_VERSION_KEY);
-      if (version !== 'v8') {
+      if (version !== 'v10') {
         localStorage.setItem(DEFAULT_STATE_KEY, JSON.stringify(DEFAULT_SETTINGS));
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(DEFAULT_SETTINGS));
-        localStorage.setItem(CONFIG_VERSION_KEY, 'v8');
+        localStorage.setItem(CONFIG_VERSION_KEY, 'v10');
         return;
       }
       const currentRaw = localStorage.getItem(SETTINGS_KEY);
